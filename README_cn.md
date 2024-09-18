@@ -51,3 +51,9 @@ if __name__ == '__main__':
 - `socket` (Python内置)
 - `time` (Python内置)
 - `os` (Python内置)
+
+## GitHub项目
+[Github](https://github.com/jacksonjapy/ftp_brute_force)
+
+## 变更日志
+请参阅 [CHANGELOG.md](CHANGELOG_cn)

@@ -8,7 +8,7 @@ from os import path
 
 
 class FtpBruteForce:
-    attempted_times = 0  # Reset connection counter
+    attempted_times = 0  # Connection counter
     """
     Create FTP object.
     Load username and password dictionary.
@@ -204,3 +204,33 @@ class FtpBruteForce:
     def __del__(self):
         self.ftp.close()
         del (self.server_address, self.user_dict_path, self.password_dict_path, self.server_port)
+
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    from ..setup import version
+
+    commit = str("""
+     _____   _____   ____      ____                   _              _____                              
+    |  ___| |_   _| |  _ \    | __ )   _ __   _   _  | |_    ___    |  ___|   ___    _ __    ___    ___ 
+    | |_      | |   | |_) |   |  _ \  | '__| | | | | | __|  / _ \   | |_     / _ \  | '__|  / __|  / _ \
+    |  _|     | |   |  __/    | |_) | | |    | |_| | | |_  |  __/   |  _|   | (_) | | |    | (__  |  __/
+    |_|       |_|   |_|       |____/  |_|     \__,_|  \__|  \___|   |_|      \___/  |_|     \___|  \___|                                                                                                                                                                                         
+    """)
+    parser = ArgumentParser(description=commit)
+    parser.add_argument("-s", "--server", dest="server", help="FTP server address", required=True)
+    parser.add_argument("--port", dest="port", help="FTP server port", default=21)
+    parser.add_argument("-u", "--user", dest="user", help="Username dictionary path", required=True)
+    parser.add_argument("--password", dest="password", help="Password dictionary path", required=True)
+    parser.add_argument("-v", "--version", dest="show_version", action="store_true", help="Show version information")
+    args = vars(parser.parse_args())
+    if parser.parse_args().show_version:
+        print(f"v {version}")
+    else:
+        parser.print_help()
+
+    fbf = FtpBruteForce(server_address=args["server"], server_port=args["port"], user_dict_path=args["user"],
+                        password_dict_path=args["password"])
+    user_tuple, password_tuple = fbf.load_dict()
+    fbf.connection()
+    fbf.brute(user_tuple, password_tuple)

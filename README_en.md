@@ -52,3 +52,9 @@ if __name__ == '__main__':
 - `os` (built-in Python module)
 ```
 Let me know if you'd like to make any changes!
+```
+## GitHub Repository
+[GitHub](https://github.com/jacksonjapy/ftp_brute_force)
+
+## Change Log
+For details, see the [CHANGELOG](CHANGELOG_cn).
