@@ -56,4 +56,4 @@ if __name__ == '__main__':
 [Github](https://github.com/jacksonjapy/ftp_brute_force)
 
 ## 变更日志
-请参阅 [CHANGELOG.md](CHANGELOG_cn)
+请参阅 [CHANGELOG.md](CHANGELOG_cn.md)
