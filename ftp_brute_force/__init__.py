@@ -1,1 +1,1 @@
-from .ftp_brute import FtpBruteForce
+from .ftp_brute_force import FtpBruteForce
