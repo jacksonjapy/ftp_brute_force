@@ -36,3 +36,7 @@
 	```shell
 	ftp_brute_force -s (server_address) --port (server_port) -u (user_dict_path) --password (password_dict_path)
 	```
+
+## 0.1.2
+### 2024-09-19
+#### 1.Fixed known bugs.
