@@ -40,3 +40,7 @@
 ## 0.1.2
 ### 2024-09-19
 #### 1.Fixed known bugs.
+
+## 0.1.3
+### 2024-09-19
+#### 1.Optimize the output format of the result.

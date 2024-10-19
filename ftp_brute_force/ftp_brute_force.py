@@ -97,8 +97,8 @@ class FtpBruteForce:
     def connection(self):
         while True:
             if self.attempted_times == 5:
-                self.error_message("Failed to connect five times, attempting to reconnect, \
-                please wait at least 5 seconds")
+                self.error_message("""Failed to connect five times, attempting to reconnect,
+please wait at least 5 seconds""")
                 self.stop(self.attempted_times)
                 self.reconnect(connection=True)
             else:
@@ -109,13 +109,13 @@ class FtpBruteForce:
                         break
                 except ConnectionRefusedError as connect_error:
                     self.attempted_times += 1
-                    self.error_message(f"Error:{connect_error},the connection was denied, \
-                    the service may not be running or the maximum number of connections may have been reached.")
+                    self.error_message(f"""Error:{connect_error},the connection was denied,
+the service may not be running or the maximum number of connections may have been reached.""")
                     continue
                 except (TimeoutError, timeout) as timeout_error:
                     self.attempted_times += 1
-                    self.error_message(f"Error:{timeout_error},Connection timeout, \
-                    please check if the network connection and FTP server are functioning properly.")
+                    self.error_message(f"""Error:{timeout_error},Connection timeout,
+please check if the network connection and FTP server are functioning properly.""")
                     continue
 
         self.attempted_times = 0  # Reset counter.
@@ -128,16 +128,16 @@ class FtpBruteForce:
         success_login: dict = dict()
 
         if len(user_dict_tuples) == 0 or len(password_tuples) == 0:
-            self.error_message("The username dictionary or password dictionary is empty. \
-            Please first call the load-dict method to load the username and password dictionary.")
+            self.error_message("""The username dictionary or password dictionary is empty.
+Please first call the load-dict method to load the username and password dictionary.""")
             exit(1)
         else:
             while True:
                 mode = None
                 # Blasting mode selection.
                 try:
-                    mode = int(input("1. Try all usernames and dictionaries in the dictionary\n2. \
-                    Single blasting\n0. Exit\nPlease enter login mode:"))
+                    mode = int(input("""1. Try all usernames and dictionaries in the dictionary
+2. Single blasting\n0. Exit\nPlease enter login mode:"""))
                     match mode:
                         case 0:
                             exit(0)
@@ -180,8 +180,8 @@ class FtpBruteForce:
                             self.error_message(f"user:{user} password:{password} Login timeout!")
                             self.attempted_times += 1
                             if self.attempted_times >= 5:
-                                self.error_message(f"The current attempt count exceeds the limit, \
-                                and this user password combination will be skipped.")
+                                self.error_message(f"""The current attempt count exceeds the limit,
+and this user password combination will be skipped.""")
                                 break
                             else:
                                 self.reconnect()
@@ -194,8 +194,8 @@ class FtpBruteForce:
                     if password_index + 1 < len(password_tuples):
                         continue
                     else:
-                        self.error_message(f"The current user and password combination attempt has been completed, \
-                        but no valid login information was found.")
+                        self.error_message("""The current user and password combination attempt has been completed,
+but no valid login information was found.""")
 
         print("The following are valid login information:")
         for key, value in success_login.items():
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     from ..setup import version
 
-    commit = str("""
+    commit = str(r"""
      _____   _____   ____      ____                   _              _____                              
     |  ___| |_   _| |  _ \    | __ )   _ __   _   _  | |_    ___    |  ___|   ___    _ __    ___    ___ 
     | |_      | |   | |_) |   |  _ \  | '__| | | | | | __|  / _ \   | |_     / _ \  | '__|  / __|  / _ \
