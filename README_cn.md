@@ -7,7 +7,7 @@
 可以通过 `pip` 安装：
 
 ```bash
-pip install ftp_brute_force
+pip install ftp_brute
 ```
 
 ## 使用说明
