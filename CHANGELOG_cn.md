@@ -40,3 +40,27 @@
 ## 0.1.3
 ### 2024-09-19
 #### 1.优化输出格式
+
+## 0.1.4
+### 2024-09-22
+#### 1.load_dict方法
+- 原来
+    ```python
+    user_tuple, password_tuple = fbf.load_dict() # 需要两个对象接收整个用户名和密码的元组。
+    ```
+- 现在
+    ```python
+    fbf.load_dict()
+    fbf.brute() # 不需要接收返回值，直接调用brute()方法即可。
+    ```
+#### 2.brute方法
+- 原来
+    ```python
+    fbf.brute(user_tuple, password_tuple)
+    ```
+- 现在
+    ```python
+    fbf.brute() # 不再需要传入参数，直接调用即可。
+    ```
+#### 3.优化输出格式
+- 打印最终结果时，用户名、密码增加黄色显示。

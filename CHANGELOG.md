@@ -44,3 +44,27 @@
 ## 0.1.3
 ### 2024-09-19
 #### 1.Optimize the output format of the result.
+
+## 0.1.4
+### 2024-09-22
+#### 1.load_dict method changed
+- original
+    ```python
+    user_tuple, password_tuple = fbf.load_dict() # Two objects are required to receive the entire tuple of username and password.
+    ```
+- now
+    ```python
+    fbf.load_dict()
+    fbf.brute() # You don't need to receive the return value, just call the brute() method.
+    ```
+#### 2.brute method changed
+- original
+    ```python
+    fbf.brute(user_tuple, password_tuple)
+    ```
+- now
+    ```python
+    fbf.brute() # You no longer need to pass in parameters, you can just call them directly.
+    ```
+#### 3.Optimize the output format
+- When the final result is printed, the username and password are displayed in yellow.
