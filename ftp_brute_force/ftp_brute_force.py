@@ -102,7 +102,6 @@ class FtpBruteForce:
         :return: String type username collection and password tuple,
                  return (None, None) if the file does not exist.
         """
-        # Using collections to eliminate duplicates.
         # Check if the dictionary file exists, and continue importing the dictionary if it exists.
         if path.exists(self.user_dict_path) and path.exists(self.password_dict_path):
             # Import username dictionary.
