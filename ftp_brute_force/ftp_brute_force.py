@@ -103,8 +103,6 @@ class FtpBruteForce:
                  return (None, None) if the file does not exist.
         """
         # Using collections to eliminate duplicates.
-        # user_set = set()
-        # password_set = set()
         # Check if the dictionary file exists, and continue importing the dictionary if it exists.
         if path.exists(self.user_dict_path) and path.exists(self.password_dict_path):
             # Import username dictionary.
@@ -148,10 +146,6 @@ please check if the network connection and FTP server are functioning properly."
         self.attempted_times = 0  # Reset counter.
 
     def brute(self):
-        """
-        :param user_dict_tuples: Username dictionary tuple.
-        :param password_tuples: Password dictionary tuple.
-        """
         success_login: dict = dict()
         mode = self.get_mode()
 
@@ -231,6 +225,5 @@ if __name__ == '__main__':
 
     fbf = FtpBruteForce(server_address=args["server"], server_port=args["port"], user_dict_path=args["user"],
                         password_dict_path=args["password"])
-    user_tuple, password_tuple = fbf.load_dict()
     fbf.connection()
     fbf.brute()

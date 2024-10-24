@@ -54,8 +54,8 @@
     ```
 - now
     ```python
-    fbf.load_dict()
-    fbf.brute() # You don't need to receive the return value, just call the brute() method.
+    #fbf.load_dict()
+    fbf.brute() # You don't need to call the load_dict() method, just call the brute() method.
     ```
 #### 2.brute method changed
 - original
@@ -68,3 +68,7 @@
     ```
 #### 3.Optimize the output format
 - When the final result is printed, the username and password are displayed in yellow.
+
+## 0.1.5
+### 2024-10-24
+#### 1.Fixed known bugs.
