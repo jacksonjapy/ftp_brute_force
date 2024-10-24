@@ -128,7 +128,7 @@ please wait at least 5 seconds""")
                 try:
                     reply = self.ftp.connect(self.server_address, self.server_port, timeout=10)
                     if "220" in reply:
-                        self.display_message("\033[32mConnection successful, FTP service ready!\033[0m", color="green")
+                        self.display_message("Connection successful, FTP service ready!", color="green")
                         self.ftp.set_pasv(True)
                         break
                 except ConnectionRefusedError as connect_error:
