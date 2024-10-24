@@ -51,4 +51,4 @@ Let me know if you'd like to make any changes!
 [GitHub](https://github.com/jacksonjapy/ftp_brute_force)
 
 ## Change Log
-For details, see the [CHANGELOG](CHANGELOG.md).
+For details, see the [CHANGELOG](https://github.com/jacksonjapy/ftp_brute_force/blob/master/CHANGELOG.md).
