@@ -186,7 +186,7 @@ and this user password combination will be skipped.""")
                     else:
                         self.reconnect()
                         continue
-                except ConnectionResetError:
+                except (EOFError, ConnectionResetError):
                     self.reconnect()
                     continue
 
