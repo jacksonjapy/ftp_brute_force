@@ -80,3 +80,7 @@
 ## 0.1.7
 ### 2024-10-28
 #### 1.Fixed known bugs.
+
+## 0.1.8
+### 2025-04-22
+#### 1. Reimplement load_dict method as a C extension module.
