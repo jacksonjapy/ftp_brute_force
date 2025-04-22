@@ -1,14 +1,12 @@
-#   -*- coding: utf-8 -*-
-# !/usr/bin/python3
-
 from ftplib import FTP, error_perm
 from socket import timeout
 from time import sleep
+from argparse import ArgumentParser
+from ..version import __VERSION__
 from .load_dict import load_dict
 
 
 class FtpBruteForce:
-    attempted_times = 0  # Connection counter
     """
     Create FTP object.
     Load username and password dictionary.
@@ -28,6 +26,7 @@ class FtpBruteForce:
         self.user_dict_path = user_dict_path
         self.password_dict_path = password_dict_path
         self.server_port = server_port
+        self.attempted_times = 0  # Connection counter
 
     @staticmethod
     def display_message(message: str, color: str = "red"):
@@ -96,26 +95,6 @@ class FtpBruteForce:
             except ValueError:
                 self.display_message("The login mode entered is invalid. Please enter 1 or 2.")
                 continue
-
-    # def load_dict(self):
-    #     """
-    #     :return: String type username collection and password tuple,
-    #              return (None, None) if the file does not exist.
-    #     """
-    #     # Check if the dictionary file exists, and continue importing the dictionary if it exists.
-    #     if path.exists(self.user_dict_path) and path.exists(self.password_dict_path):
-    #         # Import username dictionary.
-    #         with open(file=self.user_dict_path, mode="r", encoding="utf-8") as user_file:
-    #             users = [line.strip() for line in user_file if line.strip()]
-    #         with open(file=self.password_dict_path, mode="r", encoding="utf-8") as password_file:
-    #             passwords = [line.strip() for line in password_file if line.strip()]
-    #         for user in users:
-    #             for password in passwords:
-    #                 yield user, password
-    #
-    #     else:
-    #         self.display_message("Dictionary file does not exist!")
-    #         return None, None
 
     def connection(self):
         while True:
@@ -194,15 +173,12 @@ and this user password combination will be skipped.""")
         for key, value in success_login.items():
             self.display_message(message=f"user:{key} password:{value}", color="yellow")
 
-    def __del__(self):
+    def close(self):
         self.ftp.close()
-        del (self.server_address, self.user_dict_path, self.password_dict_path, self.server_port)
+        self.display_message("Connection closed!", color="green")
 
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    from ..setup import version
-
+def main():
     commit = str(r"""
      _____   _____   ____      ____                   _              _____                              
     |  ___| |_   _| |  _ \    | __ )   _ __   _   _  | |_    ___    |  ___|   ___    _ __    ___    ___ 
@@ -215,14 +191,18 @@ if __name__ == '__main__':
     parser.add_argument("--port", dest="port", help="FTP server port", default=21)
     parser.add_argument("-u", "--user", dest="user", help="Username dictionary path", required=True)
     parser.add_argument("--password", dest="password", help="Password dictionary path", required=True)
-    parser.add_argument("-v", "--version", dest="show_version", action="store_true", help="Show version information")
-    args = vars(parser.parse_args())
-    if parser.parse_args().show_version:
-        print(f"v {version}")
-    else:
-        parser.print_help()
+    parser.add_argument("-v", "--version", dest="show_version", action="store_true",
+                        help="Show version information")
+    args = parser.parse_args()
+    if args.show_version:
+        print(f"v {__VERSION__}")
+        return
 
     fbf = FtpBruteForce(server_address=args["server"], server_port=args["port"], user_dict_path=args["user"],
                         password_dict_path=args["password"])
     fbf.connection()
     fbf.brute()
+
+
+if __name__ == '__main__':
+    main()
