@@ -4,7 +4,7 @@
 from ftplib import FTP, error_perm
 from socket import timeout
 from time import sleep
-from os import path
+from .load_dict import load_dict
 
 
 class FtpBruteForce:
@@ -76,7 +76,7 @@ class FtpBruteForce:
                 self.ftp.connect(self.server_address, self.server_port, timeout=10)
                 self.ftp.set_pasv(True)
 
-    def get_mode(self) -> int:
+    def get_mode(self) -> int | None:
         """
         :return: mode number.(int)
         """
@@ -97,25 +97,25 @@ class FtpBruteForce:
                 self.display_message("The login mode entered is invalid. Please enter 1 or 2.")
                 continue
 
-    def load_dict(self):
-        """
-        :return: String type username collection and password tuple,
-                 return (None, None) if the file does not exist.
-        """
-        # Check if the dictionary file exists, and continue importing the dictionary if it exists.
-        if path.exists(self.user_dict_path) and path.exists(self.password_dict_path):
-            # Import username dictionary.
-            with open(file=self.user_dict_path, mode="r", encoding="utf-8") as user_file:
-                users = [line.strip() for line in user_file if line.strip()]
-            with open(file=self.password_dict_path, mode="r", encoding="utf-8") as password_file:
-                passwords = [line.strip() for line in password_file if line.strip()]
-            for user in users:
-                for password in passwords:
-                    yield user, password
-
-        else:
-            self.display_message("Dictionary file does not exist!")
-            return None, None
+    # def load_dict(self):
+    #     """
+    #     :return: String type username collection and password tuple,
+    #              return (None, None) if the file does not exist.
+    #     """
+    #     # Check if the dictionary file exists, and continue importing the dictionary if it exists.
+    #     if path.exists(self.user_dict_path) and path.exists(self.password_dict_path):
+    #         # Import username dictionary.
+    #         with open(file=self.user_dict_path, mode="r", encoding="utf-8") as user_file:
+    #             users = [line.strip() for line in user_file if line.strip()]
+    #         with open(file=self.password_dict_path, mode="r", encoding="utf-8") as password_file:
+    #             passwords = [line.strip() for line in password_file if line.strip()]
+    #         for user in users:
+    #             for password in passwords:
+    #                 yield user, password
+    #
+    #     else:
+    #         self.display_message("Dictionary file does not exist!")
+    #         return None, None
 
     def connection(self):
         while True:
@@ -148,7 +148,7 @@ please check if the network connection and FTP server are functioning properly."
         success_login: dict = dict()
         mode = self.get_mode()
 
-        for user, password in self.load_dict():
+        for user, password in load_dict(user_dict_path=self.user_dict_path, password_dict_path=self.password_dict_path):
             self.attempted_times = 0
 
             while self.attempted_times < 6:
