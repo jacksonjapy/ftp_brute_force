@@ -80,3 +80,7 @@
 ## 0.1.8
 ### 2025-04-22
 #### 1.使用C扩展Python模式重构load_dict方法
+
+## 0.1.9
+### 2025-04-22
+#### 1.修复`ModuleNotFoundError: No module named 'ftp_brute_force.load_dict'`

@@ -84,3 +84,7 @@
 ## 0.1.8
 ### 2025-04-22
 #### 1. Reimplement load_dict method as a C extension module.
+
+## 0.1.9
+### 2025-04-22
+#### 1.Fixed `ModuleNotFoundError: No module named 'ftp_brute_force.load_dict'`.

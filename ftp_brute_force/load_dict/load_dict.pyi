@@ -12,4 +12,4 @@ def load_dict(user_dict_path: Optional[str], password_dict_path: Optional[str]) 
     :param password_dict_path: The path of the password dictionary file.
     :return: Iterator for username and password.
     """
-    pass
+    ...
