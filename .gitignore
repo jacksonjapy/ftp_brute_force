@@ -1,1 +1,4 @@
 setup*
+/build/
+/dist/
+/*.egg-info/
