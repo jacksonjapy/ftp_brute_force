@@ -1,1 +1,1 @@
-from .load_dict import PyInit_load_dict as load_dict
+from .load_dict import load_dict
