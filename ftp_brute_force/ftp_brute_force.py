@@ -2,7 +2,7 @@ from ftplib import FTP, error_perm
 from socket import timeout
 from time import sleep
 from argparse import ArgumentParser
-from ..version import __VERSION__
+from .version import __VERSION__
 from .load_dict import load_dict
 
 
