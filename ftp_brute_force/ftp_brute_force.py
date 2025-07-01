@@ -1,9 +1,9 @@
 from ftplib import FTP, error_perm
 from socket import timeout
 from time import sleep
-from argparse import ArgumentParser
-from .version import __VERSION__
-from .load_dict import load_dict
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from ftp_brute_force.load_dict import load_dict
+from importlib.resources import files
 
 
 class FtpBruteForce:
@@ -186,20 +186,27 @@ def main():
     |  _|     | |   |  __/    | |_) | | |    | |_| | | |_  |  __/   |  _|   | (_) | | |    | (__  |  __/
     |_|       |_|   |_|       |____/  |_|     \__,_|  \__|  \___|   |_|      \___/  |_|     \___|  \___|                                                                                                                                                                                         
     """)
-    parser = ArgumentParser(description=commit)
+
+    try:
+        version = files("ftp_brute_force").joinpath("VERSION").read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        version = "unknown"
+
+    parser = ArgumentParser(
+        description=commit,
+        formatter_class=RawDescriptionHelpFormatter
+    )
+
     parser.add_argument("-s", "--server", dest="server", help="FTP server address", required=True)
-    parser.add_argument("--port", dest="port", help="FTP server port", default=21)
+    parser.add_argument("--port", dest="port", help="FTP server port (default: 21)", type=int, default=21)
     parser.add_argument("-u", "--user", dest="user", help="Username dictionary path", required=True)
     parser.add_argument("--password", dest="password", help="Password dictionary path", required=True)
-    parser.add_argument("-v", "--version", dest="show_version", action="store_true",
-                        help="Show version information")
+    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {version}",
+                        help="Show version information and exit")
     args = parser.parse_args()
-    if args.show_version:
-        print(f"v {__VERSION__}")
-        return
 
-    fbf = FtpBruteForce(server_address=args["server"], server_port=args["port"], user_dict_path=args["user"],
-                        password_dict_path=args["password"])
+    fbf = FtpBruteForce(server_address=args.server, server_port=args.port,
+                        user_dict_path=args.user, password_dict_path=args.password)
     fbf.connection()
     fbf.brute()
 

@@ -2,6 +2,41 @@
 #include <Python.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+// *************** cross-platform getline + ssize_t in MSVC ***************
+#ifdef _MSC_VER
+#include <windows.h>  // for SSIZE_T
+
+typedef SSIZE_T ssize_t;
+
+// Minimal getline replacement for MSVC
+ssize_t getline(char** lineptr, size_t* n, FILE* stream) {
+    if (!lineptr || !n || !stream) return -1;
+    const size_t CHUNK = 128;
+    size_t len = 0;
+    int ch;
+    if (*lineptr == NULL || *n == 0) {
+        *n = CHUNK;
+        *lineptr = (char*)malloc(*n);
+        if (!*lineptr) return -1;
+    }
+    while ((ch = fgetc(stream)) != EOF) {
+        if (len + 1 >= *n) {
+            *n += CHUNK;
+            char* newptr = (char*)realloc(*lineptr, *n);
+            if (!newptr) return -1;
+            *lineptr = newptr;
+        }
+        (*lineptr)[len++] = (char)ch;
+        if (ch == '\n') break;
+    }
+    if (len == 0 && ch == EOF) return -1;
+    (*lineptr)[len] = '\0';
+    return (ssize_t)len;
+}
+#endif
+// *************** end cross-platform patch ***************
 
 typedef struct {
     PyObject_HEAD
@@ -86,11 +121,21 @@ static PyTypeObject StreamIteratorType = {
 
 // load_stream(user_path, pass_path) -> StreamIterator
 static PyObject *
-load_dict(PyObject *self, PyObject *args)
+load_dict(PyObject *self, PyObject *args, PyObject *kwds)
 {
-    const char *user_path, *password_path;
-    if (!PyArg_ParseTuple(args, "ss", &user_path, &password_path))
+    const char* user_path = NULL;
+    const char* password_path = NULL;
+    static char* kwlist[] = { "user_dict_path", "password_dict_path", NULL };
+    if (!PyArg_ParseTupleAndKeywords(
+        args,
+        kwds,
+        "ss",
+        kwlist,
+        &user_path,
+        &password_path
+    )) {
         return NULL;
+    }
 
     FILE *uf = fopen(user_path, "r");
     if (!uf) {
@@ -116,8 +161,18 @@ load_dict(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef LoadDictMethods[] = {
-    {"load_dict", load_dict, METH_VARARGS,
-     "Stream loads user/password dictionaries, suitable for scenarios larger than 500MB. Returns an iterator of (user, password)."},
+    {"load_dict",
+    (PyCFunction)load_dict,
+    METH_VARARGS | METH_KEYWORDS,
+    "Stream loads user/password dictionaries...\n"
+    "\n"
+    "Parameters:\n"
+    "  user_dict_path (str): path to username file\n"
+    "  password_dict_path (str): path to password file\n"
+    "\n"
+    "Returns:\n"
+    "  iterator of (user, password) tuples\n"
+    },
     {NULL, NULL, 0, NULL}
 };
 
