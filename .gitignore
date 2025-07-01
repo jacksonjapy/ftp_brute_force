@@ -7,3 +7,4 @@ setup*
 *.pyd
 *.so
 *.o
+/tests/

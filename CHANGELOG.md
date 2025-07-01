@@ -87,4 +87,4 @@
 
 ## 0.1.9
 ### 2025-04-22
-#### 1.Fixed `ModuleNotFoundError: No module named 'ftp_brute_force.load_dict'`.
+#### 1.Fixed `ModuleNotFoundError` or `ImportError`.
