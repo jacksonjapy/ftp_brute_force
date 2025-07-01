@@ -86,5 +86,6 @@
 #### 1. Reimplement load_dict method as a C extension module.
 
 ## 0.1.9
-### 2025-04-22
+### 2025-07-2
 #### 1.Fixed `ModuleNotFoundError` or `ImportError`.
+#### 2.Fix errors in CLI.

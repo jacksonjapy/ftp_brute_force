@@ -82,5 +82,6 @@
 #### 1.使用C扩展Python模式重构load_dict方法
 
 ## 0.1.9
-### 2025-04-22
+### 2025-07-2
 #### 1.修复`ModuleNotFoundError` 或 `ImportError`
+#### 2.修复命令行程序中的错误
